@@ -111,5 +111,5 @@ echo "...................................................."
 	sudo find $TARGET_FOLDER -type f -mtime +$DUMP_NUM -exec rm {} \;
   fi
 
-echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Stop script."
+echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # The script is completed."
 echo "...................................................." 
