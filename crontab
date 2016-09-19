@@ -1,15 +1,16 @@
-﻿#View:
-#crontab -l
-#Edit: 	
-#crontab -e
+﻿#View: crontab -l
+#Edit: crontab -e
+#
+# Скрипт должен быть помечен для запуска командой: sudo chmod +x backup.sh 
+#
+# Файл cron должен как минимум соответствоать формату приведенному ниже.
 #
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 #
+# Backup Alfresco
 #0 2 * * * root /home/backUp.sh >/dev/null 2>&1
 #0 2 * * * sh /home/backUpiT.sh /opt/BackUps >> /home/kravetsma/backUpiT.log
 
-
-# Backup Alfresco
 #02 18 * * * sh /root/backUpiT.sh /opt/BackUps >> /root/backUpiT.log
 02 18 * * * sh /root/backUpiT.sh /opt/BackUps >> /root/backUpiT.log >/dev/null 2>&1
