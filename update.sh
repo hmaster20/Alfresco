@@ -1,5 +1,6 @@
 #!/bin/bash
 # Update of Alfresco
+# sudo sh ./update.sh 
 
 echo "#####################" 
 echo "#  Update Alfresco  #" 
@@ -45,7 +46,7 @@ al_update()
   # Опция "-q" заставляет команду grep подавить вывод.
   if cat $FOLDER_current/update.log | grep -q "$result_ok"
     then
-	    echo "Update is installed successfully!" #echo "$ww найдено в каше!"
+	    echo "Update is installed successfully!"
 		#rm $FOLDER_current/update.log
 	else
         echo "Error!!. See the event log: update.log"
@@ -66,14 +67,9 @@ al_update()
 #----------------------------------------  
 
 # Delete temporary files (удаление временных файлов):
-#sudo rm -r /opt/alfresco-5.0.d/alfresco.log*
-#sudo rm -r /opt/alfresco-5.0.d/share.log*
-#sudo rm -r /opt/alfresco-5.0.d/solr.log*
-#sudo rm -r /opt/alfresco-5.0.d/postgresql/postgresql.log*
 sudo rm -r /opt/alfresco-5.0.d/tomcat/logs/*
 sudo rm -r /opt/alfresco-5.0.d/tomcat/work/*
 sudo rm -r /opt/alfresco-5.0.d/tomcat/temp/*
-#sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/*.log
 sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/*.bak
 # Removal of the cached data (удаление кэша):
 sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/alfresco/
