@@ -7,13 +7,31 @@ echo "#####################"
 echo "#  Update Alfresco  #" 
 echo "#####################" 
 
-echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Start script."
-
 # Configuration:
   FOLDER="/opt/alfresco-5.0.d"				# Расположение Alfresco
   FOLDER_update="/home/kravetsma/distr/"	# Расположение билдов
   FOLDER_current=$PWD
   result_ok="BUILD SUCCESSFUL"
+  
+
+# Проверка наличия параметра запуска
+if [ -z "$1" ]
+  then
+	  echo "Do not Set option. Run the script is not possible!"
+	  exit 1
+  else
+	  # Проверка существования папки
+	  if [ -d "$FOLDER_update$1" ]; then
+	  	  cd $FOLDER_update$1
+ 		  echo "For the installation will be used catalog \"$FOLDER_update$1!\"" 
+	  else
+	      echo "Directory \"$1\" in $FOLDER_update does not exist!"
+		  exit 1
+	  fi
+fi
+
+
+echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Start script."
   
 # Function - Stop Alfresco
 al_stop()
@@ -36,17 +54,17 @@ al_start()
 # Function - Update Alfresco
 al_update()
 {
-# Проверка существования папки, переданной в качестве аргумента в строке запуска скрипта
-if [ -d "$1" ]; then
-
-   # Если папка существует, передать ее для выполнения обновления
+# Проверка существования папки
+if [ -d "$FOLDER_update$1" ]; then
+   # Проверка существования инсталятора
    if [ -f $FOLDER_update$1/install-amp.xml ]
-     then
-	     cd $FOLDER_update
-		 cd $1
-         sudo ant -Dalfresco.install=$FOLDER -f install-amp.xml > $FOLDER_current/update.log
+      then
+	  	  cd $FOLDER_update$1
+          sudo ant -Dalfresco.install=$FOLDER -f install-amp.xml > $FOLDER_current/update.log
+	  else
+	  	  echo "File \"install-amp.xml\" in \"$FOLDER_update$1\" does not exist!"		 
    fi  
-   
+   # Проверка корректности обновления
    if cat $FOLDER_current/update.log | grep -q "$result_ok"
      then
 	     cd $FOLDER_update
