@@ -9,9 +9,12 @@ echo "#####################"
 
 # Configuration:
   FOLDER="/opt/alfresco-5.0.d"				# Расположение Alfresco
-  FOLDER_update="/home/kravetsma/distr/"	# Расположение билдов
-  FOLDER_current=$PWD
-  result_ok="BUILD SUCCESSFUL"
+  FOLDER_update="/home/kravetsma/distr/"	# Расположение билда
+  FOLDER_current=$PWD						# Текущий рабочий каталог
+  result_ok="BUILD SUCCESSFUL"				# Результат успешного обновления
+  Time=0									# Текущее время, сек
+  TimeWait=5								# Интервалы проверки, сек
+  TimeWaitmax=240							# Максимальное время ожидания, сек
   
 
 # Проверка наличия параметра запуска
@@ -51,13 +54,11 @@ al_start()
   sudo service alfresco start
 }
 
-# Function - Update Alfresco
+# Function - Update Alfresco from build
 al_update()
 {
-# Проверка существования папки
-if [ -d "$FOLDER_update$1" ]; then
-   # Проверка существования инсталятора
-   if [ -f $FOLDER_update$1/install-amp.xml ]
+if [ -d "$FOLDER_update$1" ]; then				# Проверка существования папки
+   if [ -f $FOLDER_update$1/install-amp.xml ]   # Проверка существования инсталятора
       then
 	  	  cd $FOLDER_update$1
           sudo ant -Dalfresco.install=$FOLDER -f install-amp.xml > $FOLDER_current/update.log
@@ -67,17 +68,40 @@ if [ -d "$FOLDER_update$1" ]; then
    # Проверка корректности обновления
    if cat $FOLDER_current/update.log | grep -q "$result_ok"
      then
-	     cd $FOLDER_update
-		 sudo cp yui-common* /opt/alfresco-5.0.d/tomcat/webapps/share/js/
-		 sudo cp MessagesWebScript.class /opt/alfresco-5.0.d/tomcat/webapps/share/WEB-INF/classes/org/alfresco/web/scripts/		 
-	     echo "Update is installed successfully!"
-		 echo "Click the link /share/page/index and and press Refresh Web Scripts !!!"
+	     echo "Build is installed successfully!"
 	 else
-         echo "Error!!. See the event log: update.log"
+         echo "Error!!. See the event log: $FOLDER_current/update.log"
    fi
 else
    echo "Не верно указан каталог сборки!"
    exit 1
+fi
+}
+
+# Function - Timer
+timer()
+{
+	Time=$(($Time+$1)) # сумма значения + аргумент (входное значение)
+    if [ "$Time" -ge "$TimeWaitmax" ]; then echo "Files are not updated. Timeout!"; exit 1;fi
+}
+
+# Function - Update Alfresco from files
+al_file_update()
+{
+folder1="/opt/alfresco-5.0.d/tomcat/webapps/share/js/"
+folder2="/opt/alfresco-5.0.d/tomcat/webapps/share/WEB-INF/classes/org/alfresco/web/scripts/"
+
+while [ ! -d $folder1 ] || [ ! -d $folder2 ]
+do
+  sleep $TimeWait #Задержка в секундах до выполнения следующей команды
+  timer $TimeWait
+done
+
+if [ -d "$folder1" ] || [ -d "$folder2" ]; then
+  cd $FOLDER_update
+  sudo cp yui-common* $folder1
+  sudo cp MessagesWebScript.class $folder2	
+  echo "Files updated. Click the link /share/page/index and and press Refresh Web Scripts !!!"		 
 fi
 }
 
@@ -107,7 +131,7 @@ sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/solr4/
 echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Temporary files and cache are removed."  
 
 #------------------------------------------
-# 3 - Update
+# 3 - Build update
 #------------------------------------------
 
 echo "...................................................." 
@@ -126,3 +150,13 @@ echo "...................................................."
   echo "...................................................." 
   echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Started Alfresco. The script is completed." 
   echo "...................................................." 
+  
+#------------------------------------------
+# 5 - Files update
+#------------------------------------------
+
+  al_file_update		 # Обновление файлов возможно только после полного запуска сервера
+  echo "...................................................." 
+  echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # The script is completed." 
+  echo "...................................................."   
+  
