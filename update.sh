@@ -1,5 +1,6 @@
 #!/bin/bash
 # Update of Alfresco
+# sudo chmod +x update.sh
 # sudo sh ./update.sh 
 
 echo "#####################" 
