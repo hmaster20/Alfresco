@@ -8,6 +8,7 @@ echo "#  Update Alfresco  #"
 echo "#####################" 
 
 echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Start script."
+echo "...................................................." 
 
 # Configuration:
   FOLDER="/opt/alfresco-5.0.d"			# Расположение Alfresco
@@ -84,8 +85,7 @@ echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Temporary files and cache are remo
 #------------------------------------------
 
 echo "...................................................." 
-echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Start update."  
-
+echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Start update."
 (cd $FOLDER_update && al_update) # directory changed in the subshell
 # parent shell
 echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # End update."  
