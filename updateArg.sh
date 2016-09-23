@@ -102,7 +102,7 @@ if [ -d "$folder1" ] || [ -d "$folder2" ]; then
   cd $FOLDER_update
   sudo cp yui-common* $folder1
   sudo cp MessagesWebScript.class $folder2	
-  echo "Files updated. Click the link /share/page/index and and press Refresh Web Scripts !!!"		 
+  echo "Files updated. Click the link /share/page/index and and press \"Refresh Web Scripts\" !!!"		 
 fi
 }
 
@@ -149,7 +149,7 @@ echo "...................................................."
 
   al_start
   echo "...................................................." 
-  echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Started Alfresco. The script is completed." 
+  echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Started Alfresco." 
   echo "...................................................." 
   
 #------------------------------------------
