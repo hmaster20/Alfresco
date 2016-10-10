@@ -1,5 +1,6 @@
 # /etc/fstab: static file system information.
 # Пример автоматического монтирования SMB-share
+# Перечитать и перегрузить /etc/fstab, командой : mount -a 
 #
 # Use 'blkid' to print the universally unique identifier for a
 # device; this may be used with UUID= as a more robust way to name devices
