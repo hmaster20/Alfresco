@@ -1,5 +1,6 @@
 #!/bin/bash
 # Remote Backup of Alfresco
+# sudo mount -t cifs -o user=admin //fs01.local/backup /mnt/BackupSrv/
 
 echo "############################" 
 echo "#  Remote BackUp Alfresco  #" 
