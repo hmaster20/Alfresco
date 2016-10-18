@@ -20,8 +20,7 @@ al_stop()
 {
   sudo service alfresco stop
 
-  # Если Alfresco не останавливается, завершить работу скрипта, 
-  # чтобы не повредить индексы данных !
+  # Если Alfresco не останавливается, завершить работу скрипта, чтобы не повредить индексы!
   if [ "$?" != "0" ]; then
     echo "Alfresco Stop FAILED - STOP SCRIPT!"
     exit 1;
