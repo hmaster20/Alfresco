@@ -17,19 +17,11 @@ echo "#####################"
   TimeWaitmax=240							# Максимальное время ожидания, сек
   PathBuild=""								# Переменная для хранения пути к сборке
   
-  NORMAL='\033[0m'							#  ${NORMAL}  # все атрибуты по умолчанию
-  LCYAN='\033[1;36m'     					#  ${LCYAN}
-  LYELLOW='\033[1;33m'     					#  ${LYELLOW}
-  REDWHITE='\033[37;1;41m'					#  ${REDWHITE}
-  LGREEN='\033[1;32m'     					#  ${LGREEN}
 
 # Проверка наличия параметра запуска
 if [ -z "$1" ]
   then
-      echo "\n${REDWHITE} Do not Set option. Run the script is not possible! ${NORMAL}"
-      echo "${REDWHITE} ${NORMAL} Example:                                         ${REDWHITE} ${NORMAL}"
-      echo "${REDWHITE} ${NORMAL}${LCYAN}         sudo sh ./updateArg.sh ${LYELLOW}v9x               ${NORMAL}${REDWHITE} ${NORMAL}"
-      echo "${REDWHITE}                                                    ${NORMAL}"  
+	  echo "Do not Set option. Run the script is not possible!"
 	  exit 1
   else
 	  # Проверка существования папки
@@ -73,16 +65,16 @@ if [ -d "$PathBuild" ]; then						# Проверка существования 
           sudo ant -Dalfresco.install=$FOLDER -f install-amp.xml > $FOLDER_current/update.log
 		  if cat $FOLDER_current/update.log | grep -q "$result_ok"	# Проверка корректности обновления
              then
-	             echo "${LGREEN}Build is installed successfully!${NORMAL}"
+	             echo "Build is installed successfully!"
 	      else
-                 echo "${REDWHITE}Error!!. See the event log: $FOLDER_current/update.log${NORMAL}"
+                 echo "Error!!. See the event log: $FOLDER_current/update.log"
 				 exit 1
           fi
 	  else
 	  	  echo "File \"install-amp.xml\" in \"$PathBuild\" does not exist!"		 
    fi
 else
-   echo "${REDWHITE}Не верно указан каталог сборки!${NORMAL}"
+   echo "Не верно указан каталог сборки!"
    exit 1
 fi
 }
@@ -110,7 +102,7 @@ if [ -d "$folder1" ] || [ -d "$folder2" ]; then
   cd $FOLDER_update
   sudo cp yui-common* $folder1
   sudo cp MessagesWebScript.class $folder2	
-  echo "Files updated. Click the link ${LYELLOW}/share/page/index${NORMAL} and and press \"Refresh Web Scripts\" !!!"		 
+  echo "Files updated. Click the link /share/page/index and and press \"Refresh Web Scripts\" !!!"		 
 fi
 }
 
