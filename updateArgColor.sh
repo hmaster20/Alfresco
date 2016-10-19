@@ -3,10 +3,6 @@
 # sudo chmod +x updateArg.sh
 # sudo sh ./updateArg.sh 
 
-echo "#####################" 
-echo "#  Update Alfresco  #" 
-echo "#####################" 
-
 # Configuration:
   FOLDER="/opt/alfresco-5.0.d"				# Расположение Alfresco
   FOLDER_update="/home/kravetsma/distr/"	# Расположение билда
@@ -17,11 +13,17 @@ echo "#####################"
   TimeWaitmax=240							# Максимальное время ожидания, сек
   PathBuild=""								# Переменная для хранения пути к сборке
   
-  NORMAL='\033[0m'							#  ${NORMAL}  # все атрибуты по умолчанию
-  LCYAN='\033[1;36m'     					#  ${LCYAN}
-  LYELLOW='\033[1;33m'     					#  ${LYELLOW}
-  REDWHITE='\033[37;1;41m'					#  ${REDWHITE}
-  LGREEN='\033[1;32m'     					#  ${LGREEN}
+# Color mask:
+  NORMAL='\033[0m'							#  ${NORMAL}
+  GRAY='\033[0;37m'       					#  ${GRAY}      # серый (стандартный цвет)
+  #DGRAY='\033[0;30m'	       				#  ${DRAY}      # темно-серый
+  REDWHITE='\033[37;1;41m'					#  ${REDWHITE}  # белый на красном фоне
+  DGRAY='\033[1;30m'						#  ${DGRAY}		# жирный серый
+  LCYAN='\033[1;36m'     					#  ${LCYAN}		# жирный цвет морской волны
+  LYELLOW='\033[1;33m'     					#  ${LYELLOW}	# жирный желтый
+  LGREEN='\033[1;32m'     					#  ${LGREEN}	# жирный зеленый
+
+
 
 # Проверка наличия параметра запуска
 if [ -z "$1" ]
@@ -35,16 +37,20 @@ if [ -z "$1" ]
 	  # Проверка существования папки
 	  if [ -d "$FOLDER_update$1" ]; then
 	  	  PathBuild=$FOLDER_update$1
- 		  echo "For the installation will be used catalog \"$PathBuild\""
+ 		  echo "${DGRAY}For the installation will be used catalog \"$PathBuild\"${NORMAL}\n"
 	  else
-	      echo "Directory \"$1\" in $FOLDER_update does not exist!"
+	      echo "Directory ${LYELLOW}\"$1\"${NORMAL} in $FOLDER_update ${LYELLOW}does not exist!${NORMAL}"
 		  exit 1
 	  fi
 fi
 
 # Фактический запуск скрипта
+echo "${LGREEN}#####################"
+echo "#  Update Alfresco  #"
+echo "#####################${NORMAL}"
 echo "...................................................." 
 echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Start script."
+echo "...................................................." 
   
 # Функция - Остановки Alfresco
 al_stop()
@@ -53,7 +59,7 @@ al_stop()
   # Если Alfresco не останавливается, завершить работу скрипта, 
   # чтобы не повредить индексы данных !
   if [ "$?" != "0" ]; then
-    echo "Alfresco Stop FAILED - STOP SCRIPT!"
+    echo "${REDWHITE}Alfresco Stop FAILED - STOP SCRIPT!${NORMAL}"
     exit 1;
   fi
 }
@@ -73,7 +79,7 @@ if [ -d "$PathBuild" ]; then						# Проверка существования 
           sudo ant -Dalfresco.install=$FOLDER -f install-amp.xml > $FOLDER_current/update.log
 		  if cat $FOLDER_current/update.log | grep -q "$result_ok"	# Проверка корректности обновления
              then
-	             echo "${LGREEN}Build is installed successfully!${NORMAL}"
+	             echo "\n${LGREEN}Build is installed successfully!${NORMAL}\n"
 	      else
                  echo "${REDWHITE}Error!!. See the event log: $FOLDER_current/update.log${NORMAL}"
 				 exit 1
@@ -108,9 +114,14 @@ done
 
 if [ -d "$folder1" ] || [ -d "$folder2" ]; then
   cd $FOLDER_update
-  sudo cp yui-common* $folder1
-  sudo cp MessagesWebScript.class $folder2	
-  echo "Files updated. Click the link ${LYELLOW}/share/page/index${NORMAL} and and press \"Refresh Web Scripts\" !!!"		 
+  if [ -f "MessagesWebScript.class" ] && [ -f "yui-common.js" ] 
+	then  
+		sudo cp yui-common* $folder1
+		sudo cp MessagesWebScript.class $folder2	
+		echo "Files updated. Click the link ${LYELLOW}/share/page/index${NORMAL} and and press \"Refresh Web Scripts\" !!!"	
+    else
+		echo "Необходимые файлы отсутствуют!"
+  fi  
 fi
 }
 
@@ -119,7 +130,9 @@ fi
 # 1 - Begin by stopping Alfresco
 #----------------------------------------
 
+  echo "${DGRAY}"
   al_stop
+  echo "${NORMAL}"
   echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Alfresco SERVER stop."
   echo "...................................................." 
   
@@ -155,7 +168,9 @@ echo "...................................................."
 # 4 - Start the Alfresco service
 #------------------------------------------
 
+  echo "${DGRAY}"
   al_start
+  echo "${NORMAL}"
   echo "...................................................." 
   echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Started Alfresco." 
   echo "...................................................." 
