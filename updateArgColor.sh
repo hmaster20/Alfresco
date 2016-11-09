@@ -85,7 +85,7 @@ if [ -d "$PathBuild" ]; then						# Проверка существования 
 				 exit 1
           fi
 	  else
-	  	  echo "File \"install-amp.xml\" in \"$PathBuild\" does not exist!"		 
+	  	  echo "${REDWHITE}File \"install-amp.xml\" in \"$PathBuild\" does not exist!${NORMAL}"		 
    fi
 else
    echo "${REDWHITE}Не верно указан каталог сборки!${NORMAL}"
