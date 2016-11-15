@@ -2,7 +2,7 @@
 # Update of Alfresco with Backup
 
 
-# Configuration:
+  # Основные параметры:
   FOLDER="/opt/alfresco-5.0.d"				# Расположение Alfresco
   FOLDER_update="/home/kravetsma/distr/"	# Расположение билда
   FOLDER_current=$PWD						# Текущий рабочий каталог
@@ -12,7 +12,14 @@
   TimeWaitmax=240							# Максимальное время ожидания, сек
   PathBuild=""								# Переменная для хранения пути к сборке
   
-# Color mask:
+  # Параметры бэкапа:
+  TIMESTAMP=$( date +%Y%m%d%H%M%S )			# Создание временной метки
+  DUMP_NUM=8								# Число бэкапов
+  FOLDER_Backup="/opt/BackUps"				# Расположение бэкапов
+  FOLDER_Remote="/mnt/BackupSrv/Backup"		# Расположение удаленного хранилища
+  TARGET_FOLDER=$FOLDER_Backup
+  
+  # Цветовая маска:
   NORMAL='\033[0m'							#  ${NORMAL}
   GRAY='\033[0;37m'       					#  ${GRAY}      # серый (стандартный цвет)
   #DGRAY='\033[0;30m'	       				#  ${DRAY}      # темно-серый
@@ -36,9 +43,9 @@ if [ -z "$1" ]
 	  # Проверка существования папки
 	  if [ -d "$FOLDER_update$1" ]; then
 	  	  PathBuild=$FOLDER_update$1
- 		  echo "${DGRAY}For the installation will be used catalog \"$PathBuild\"${NORMAL}\n"
+ 		  echo "\n${DGRAY}For the installation will be used catalog \"$PathBuild\"${NORMAL}\n"
 	  else
-	      echo "Directory ${LYELLOW}\"$1\"${NORMAL} in $FOLDER_update ${LYELLOW}does not exist!${NORMAL}"
+	      echo "\nDirectory ${LYELLOW}\"$1\"${NORMAL} in $FOLDER_update ${LYELLOW}does not exist!${NORMAL}"
 		  exit 1
 	  fi
 fi
@@ -80,7 +87,7 @@ if [ -d "$PathBuild" ]; then						# Проверка существования 
              then
 	             echo "\n${LGREEN}Build is installed successfully!${NORMAL}\n"
 	      else
-                 echo "${REDWHITE}Error!!. See the event log: $FOLDER_current/update.log${NORMAL}"
+                 echo "${REDWHITE}Error!! See the event log: $FOLDER_current/update.log${NORMAL}"
 				 exit 1
           fi
 	  else
@@ -119,9 +126,44 @@ if [ -d "$folder1" ] || [ -d "$folder2" ]; then
 		sudo cp MessagesWebScript.class $folder2	
 		echo "Files updated. Click the link ${LYELLOW}/share/page/index${NORMAL} and and press \"Refresh Web Scripts\" !!!"	
     else
-		echo "Необходимые файлы отсутствуют!"
+		echo "${LYELLOW}Необходимые файлы отсутствуют!${NORMAL}"
   fi  
 fi
+}
+
+# Функция - создания резервной копии Alfresco
+al_file_backup()
+{
+  # Создание бэкапа с именем, содержащем временную метку
+  BACKUP_FILE="alfresco_back_${TIMESTAMP}.zip"  
+  sudo zip -r -9 $TARGET_FOLDER/$BACKUP_FILE $FOLDER >/dev/null 2>&1
+  
+  echo $BACKUP_FILE
+  echo $TARGET_FOLDER/$BACKUP_FILE $FOLDER
+  
+  # Проверка наличия созданного бэкапа
+  if [ -f "$TARGET_FOLDER/$BACKUP_FILE" ]; then
+    echo "\n${LGREEN}BACKUP SUCCESSFUL!${NORMAL}\n"    
+    SUCCESS=1
+  else
+    echo "${REDWHITE}BACKUP Error!!${NORMAL}"
+	# в случае ошибки - заврешение работы скрипта
+	exit 1
+  fi
+}
+
+# Функция - перемещения резервной копии Alfresco в хранилище
+al_file_backup_moved()
+{
+  sudo mv $TARGET_FOLDER/$BACKUP_FILE $FOLDER_Remote
+  # Проверка наличия созданного бэкапа
+  if [ -f "$FOLDER_Remote/$BACKUP_FILE" ]; then
+    echo "\n${LGREEN}BACKUP Moved SUCCESSFUL!${NORMAL}\n"    
+    SUCCESS=1
+  else
+    echo "${REDWHITE}BACKUP Moved Error!!${NORMAL}"
+	SUCCESS=0
+  fi
 }
 
 
@@ -139,29 +181,33 @@ fi
 # 2 - Deleting temps folders
 #----------------------------------------  
 
+echo "${DGRAY}"
 # Delete temporary files (удаление временных файлов):
+sudo rm -r /opt/alfresco-5.0.d/alfresco.log*
+sudo rm -r /opt/alfresco-5.0.d/share.log*
+sudo rm -r /opt/alfresco-5.0.d/solr.log*
+sudo rm -r /opt/alfresco-5.0.d/postgresql/postgresql.log*
 sudo rm -r /opt/alfresco-5.0.d/tomcat/logs/*
 sudo rm -r /opt/alfresco-5.0.d/tomcat/work/*
 sudo rm -r /opt/alfresco-5.0.d/tomcat/temp/*
+sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/*.log
 sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/*.bak
 # Removal of the cached data (удаление кэша):
 sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/alfresco/
 sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/share/
 sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/solr4/
+echo "${NORMAL}"
 
 echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Temporary files and cache are removed."  
+echo "...................................................." 
 
 #------------------------------------------
 # 3 - Create backup
 #------------------------------------------
 
-echo "...................................................." 
-echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Start backup."  
-  
- sudo sh backupRemote.sh >> /home/kravetsma/backUpiT.log
-
-echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # End backup."  
-echo "...................................................." 
+ echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Start backup."
+ al_file_backup
+ echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # End backup."
 
 #------------------------------------------
 # 4 - Build update
