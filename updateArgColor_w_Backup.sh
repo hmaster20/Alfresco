@@ -13,6 +13,7 @@
   PathBuild=""								# Переменная для хранения пути к сборке
   
   # Параметры бэкапа:
+  Z=zip										# Архиватор
   TIMESTAMP=$( date +%Y%m%d%H%M%S )			# Создание временной метки
   DUMP_NUM=8								# Число бэкапов
   FOLDER_Backup="/opt/BackUps"				# Расположение бэкапов
@@ -65,7 +66,7 @@ al_stop()
   # Если Alfresco не останавливается, завершить работу скрипта, 
   # чтобы не повредить индексы данных !
   if [ "$?" != "0" ]; then
-    echo "${REDWHITE}Alfresco Stop FAILED - STOP SCRIPT!${NORMAL}"
+    echo "${REDWHITE}Alfresco FAILED - STOP SCRIPT!\n${NORMAL}"
     exit 1;
   fi
 }
@@ -131,15 +132,24 @@ if [ -d "$folder1" ] || [ -d "$folder2" ]; then
 fi
 }
 
+# Функция - проверка наличия или установки пакета архивации
+check_zip()
+{
+if [ $(dpkg-query -W -f='${Status}' $Z 2>/dev/null | grep -c "ok installed") -eq 0 ];
+then
+   echo "Пакет $Z не найден! Запущена процедура установки!"
+   sudo apt-get install $Z
+fi
+}
+
 # Функция - создания резервной копии Alfresco
 al_file_backup()
 {
+  # Проверка наличия архиватора
+  check_zip
   # Создание бэкапа с именем, содержащем временную метку
   BACKUP_FILE="alfresco_back_${TIMESTAMP}.zip"  
   sudo zip -r -9 $TARGET_FOLDER/$BACKUP_FILE $FOLDER >/dev/null 2>&1
-  
-  echo $BACKUP_FILE
-  echo $TARGET_FOLDER/$BACKUP_FILE $FOLDER
   
   # Проверка наличия созданного бэкапа
   if [ -f "$TARGET_FOLDER/$BACKUP_FILE" ]; then
@@ -205,7 +215,7 @@ echo "...................................................."
 # 3 - Create backup
 #------------------------------------------
 
- echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Start backup."
+ echo "\n$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Start backup."
  al_file_backup
  echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # End backup."
 
