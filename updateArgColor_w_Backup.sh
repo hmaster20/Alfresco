@@ -158,7 +158,7 @@ al_file_backup()
   else
     echo "${REDWHITE}BACKUP Error!!${NORMAL}"
 	# в случае ошибки - заврешение работы скрипта
-	exit 1
+	# exit 1
   fi
 }
 
@@ -217,6 +217,7 @@ echo "...................................................."
 
  echo "\n$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Start backup."
  al_file_backup
+ al_file_backup_moved
  echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # End backup."
 
 #------------------------------------------
