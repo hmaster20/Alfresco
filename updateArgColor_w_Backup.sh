@@ -180,7 +180,7 @@ al_file_backup_moved()
     echo "\n${LGREEN}BACKUP Moved SUCCESSFUL!${NORMAL}\n"    
     SUCCESS=1
   else
-    echo "${REDWHITE}BACKUP Moved Error!!${NORMAL}"
+    echo "$\n{REDWHITE}BACKUP Moved Error!!${NORMAL}\n"
 	SUCCESS=0
   fi
 }
@@ -188,12 +188,12 @@ al_file_backup_moved()
 # Функция - проверка необходимости запуска резервного копирования
 is_backup()
 {
+echo "...................................................." 
 if [ $isBackup = "NoBackup" ]
 then
 	echo "${LYELLOW}Создание резервной копии отключено!${NORMAL}"
 fi	
-if [ ! $isBackup = "NoBackup" ]; then	
-	echo "...................................................." 
+if [ ! $isBackup = "NoBackup" ]; then
     echo "\n$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Start backup."
 	al_file_backup
 	al_file_backup_moved
@@ -209,7 +209,7 @@ fi
   echo "${DGRAY}"
   al_stop
   echo "${NORMAL}"
-  echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Alfresco SERVER stop."
+  echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Alfresco остановлен."
   echo "...................................................." 
   
 #----------------------------------------
@@ -261,7 +261,7 @@ echo "...................................................."
   al_start
   echo "${NORMAL}"
   echo "...................................................." 
-  echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Started Alfresco." 
+  echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Alfresco запущен!" 
   echo "...................................................." 
   
 #------------------------------------------
