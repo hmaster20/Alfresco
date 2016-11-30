@@ -38,6 +38,7 @@ if [ -z "$1" ]
       echo "\n${REDWHITE} Do not Set option. Run the script is not possible! ${NORMAL}"
       echo "${REDWHITE} ${NORMAL} Example:                                         ${REDWHITE} ${NORMAL}"
       echo "${REDWHITE} ${NORMAL}${LCYAN}         sudo sh ./updateArg.sh ${LYELLOW}v9x               ${NORMAL}${REDWHITE} ${NORMAL}"
+	  echo "${REDWHITE} ${NORMAL}${LCYAN}         sudo sh ./updateArg.sh ${LYELLOW}v9x NoBackup      ${NORMAL}${REDWHITE} ${NORMAL}"
       echo "${REDWHITE}                                                    ${NORMAL}"  
 	  exit 1
   else
@@ -180,7 +181,7 @@ al_file_backup_moved()
     echo "\n${LGREEN}BACKUP Moved SUCCESSFUL!${NORMAL}\n"    
     SUCCESS=1
   else
-    echo "$\n{REDWHITE}BACKUP Moved Error!!${NORMAL}\n"
+    echo "\n${REDWHITE}BACKUP Moved Error!!${NORMAL}\n"
 	SUCCESS=0
   fi
 }
