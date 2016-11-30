@@ -3,7 +3,7 @@
 # sudo chmod +x updateArg.sh
 # sudo sh ./updateArg.sh 
 
-# Configuration:
+  # Основные параметры:
   FOLDER="/opt/alfresco-5.0.d"				# Расположение Alfresco
   FOLDER_update="/home/kravetsma/distr/"	# Расположение билда
   FOLDER_current=$PWD						# Текущий рабочий каталог
@@ -13,7 +13,7 @@
   TimeWaitmax=240							# Максимальное время ожидания, сек
   PathBuild=""								# Переменная для хранения пути к сборке
   
-# Color mask:
+  # Цветовая маска:
   NORMAL='\033[0m'							#  ${NORMAL}
   GRAY='\033[0;37m'       					#  ${GRAY}      # серый (стандартный цвет)
   #DGRAY='\033[0;30m'	       				#  ${DRAY}      # темно-серый
@@ -37,9 +37,9 @@ if [ -z "$1" ]
 	  # Проверка существования папки
 	  if [ -d "$FOLDER_update$1" ]; then
 	  	  PathBuild=$FOLDER_update$1
- 		  echo "${DGRAY}For the installation will be used catalog \"$PathBuild\"${NORMAL}\n"
+ 		  echo "\n${DGRAY}For the installation will be used catalog \"$PathBuild\"${NORMAL}\n"
 	  else
-	      echo "Directory ${LYELLOW}\"$1\"${NORMAL} in $FOLDER_update ${LYELLOW}does not exist!${NORMAL}"
+	      echo "\nDirectory ${LYELLOW}\"$1\"${NORMAL} in $FOLDER_update ${LYELLOW}does not exist!${NORMAL}"
 		  exit 1
 	  fi
 fi
@@ -59,7 +59,7 @@ al_stop()
   # Если Alfresco не останавливается, завершить работу скрипта, 
   # чтобы не повредить индексы данных !
   if [ "$?" != "0" ]; then
-    echo "${REDWHITE}Alfresco Stop FAILED - STOP SCRIPT!${NORMAL}"
+    echo "${REDWHITE}Alfresco FAILED - STOP SCRIPT!\n${NORMAL}"
     exit 1;
   fi
 }
@@ -81,7 +81,7 @@ if [ -d "$PathBuild" ]; then						# Проверка существования 
              then
 	             echo "\n${LGREEN}Build is installed successfully!${NORMAL}\n"
 	      else
-                 echo "${REDWHITE}Error!!. See the event log: $FOLDER_current/update.log${NORMAL}"
+                 echo "${REDWHITE}Error!! See the event log: $FOLDER_current/update.log${NORMAL}"
 				 exit 1
           fi
 	  else
@@ -120,7 +120,7 @@ if [ -d "$folder1" ] || [ -d "$folder2" ]; then
 		sudo cp MessagesWebScript.class $folder2	
 		echo "Files updated. Click the link ${LYELLOW}/share/page/index${NORMAL} and and press \"Refresh Web Scripts\" !!!"	
     else
-		echo "Необходимые файлы отсутствуют!"
+		echo "${LYELLOW}Необходимые файлы отсутствуют!${NORMAL}"
   fi  
 fi
 }
@@ -140,15 +140,22 @@ fi
 # 2 - Deleting temps folders
 #----------------------------------------  
 
+echo "${DGRAY}"
 # Delete temporary files (удаление временных файлов):
+sudo rm -r /opt/alfresco-5.0.d/alfresco.log*
+sudo rm -r /opt/alfresco-5.0.d/share.log*
+sudo rm -r /opt/alfresco-5.0.d/solr.log*
+sudo rm -r /opt/alfresco-5.0.d/postgresql/postgresql.log*
 sudo rm -r /opt/alfresco-5.0.d/tomcat/logs/*
 sudo rm -r /opt/alfresco-5.0.d/tomcat/work/*
 sudo rm -r /opt/alfresco-5.0.d/tomcat/temp/*
+sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/*.log
 sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/*.bak
 # Removal of the cached data (удаление кэша):
 sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/alfresco/
 sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/share/
 sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/solr4/
+echo "${NORMAL}"
 
 echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Temporary files and cache are removed."  
 
