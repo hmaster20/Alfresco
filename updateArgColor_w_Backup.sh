@@ -11,6 +11,7 @@
   TimeWait=5								# Интервалы проверки, сек
   TimeWaitmax=240							# Максимальное время ожидания, сек
   PathBuild=""								# Переменная для хранения пути к сборке
+  isBackup="Backup"							# Переменная для хранения 2-го параметра
   
   # Параметры бэкапа:
   Z=zip										# Архиватор
@@ -31,7 +32,6 @@
   LGREEN='\033[1;32m'     					#  ${LGREEN}	# жирный зеленый
 
 
-
 # Проверка наличия параметра запуска
 if [ -z "$1" ]
   then
@@ -45,11 +45,20 @@ if [ -z "$1" ]
 	  if [ -d "$FOLDER_update$1" ]; then
 	  	  PathBuild=$FOLDER_update$1
  		  echo "\n${DGRAY}For the installation will be used catalog \"$PathBuild\"${NORMAL}\n"
+		  
 	  else
 	      echo "\nDirectory ${LYELLOW}\"$1\"${NORMAL} in $FOLDER_update ${LYELLOW}does not exist!${NORMAL}"
 		  exit 1
 	  fi
 fi
+
+
+# Проверка наличия параметра для отключения резервного копирования
+if [ ! -z "$2" ]
+   then
+		isBackup=$2
+fi
+
 
 # Фактический запуск скрипта
 echo "${LGREEN}#####################"
@@ -176,6 +185,22 @@ al_file_backup_moved()
   fi
 }
 
+# Функция - проверка необходимости запуска резервного копирования
+is_backup()
+{
+if [ $isBackup = "NoBackup" ]
+then
+	echo "${LYELLOW}Создание резервной копии отключено!${NORMAL}"
+fi	
+if [ ! $isBackup = "NoBackup" ]; then	
+	echo "...................................................." 
+    echo "\n$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Start backup."
+	al_file_backup
+	al_file_backup_moved
+	echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # End backup."
+fi
+}
+
 
 #----------------------------------------
 # 1 - Begin by stopping Alfresco
@@ -209,16 +234,12 @@ sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/solr4/
 echo "${NORMAL}"
 
 echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Temporary files and cache are removed."  
-echo "...................................................." 
 
 #------------------------------------------
 # 3 - Create backup
 #------------------------------------------
 
- echo "\n$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Start backup."
- al_file_backup
- al_file_backup_moved
- echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # End backup."
+is_backup
 
 #------------------------------------------
 # 4 - Build update
