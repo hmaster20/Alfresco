@@ -68,6 +68,8 @@ sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/*.bak
 sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/alfresco/
 sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/share/
 sudo rm -r /opt/alfresco-5.0.d/tomcat/webapps/solr4/
+# Удаление моделей
+sudo rm -r /opt/alfresco-5.0.d/alf_data/solr4/model/*
 
 echo "$(date +%d.%m.%Y) ($(date +%H.%M:%S)) # Temporary files and cache are removed."  
 
